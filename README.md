@@ -1,12 +1,11 @@
-# MariaDB MaxScale Docker image
+# MariaDB MaxScale Sharded Database Docker image
 
-This Docker image runs the latest 2.4 version of MariaDB MaxScale.
-
--	[Travis CI:  
-	![build status badge](https://img.shields.io/travis/mariadb-corporation/maxscale-docker/master.svg)](https://travis-ci.org/mariadb-corporation/maxscale-docker/branches)
 
 ## Running
 This configuration simulates a basic sharded database environment with two MariaDB shards. 
+shard1: contains zipcodes_one database
+shard2: contains zipcodes_two database
+
 MaxScale is set up as a query router, distributing SQL queries across the 
 appropriate shards based on database name.
 
@@ -24,6 +23,12 @@ MaxScale exposes ports for client connections:
 Port 4000 – Generic SQL routing
 
 Port 8989 – MaxCtrl admin interface
+
+MaxScale and the databses use the following credentials:
+```
+username: maxuser
+password: password
+```
 
 Example using the MariaDB client:
 ```
@@ -43,17 +48,22 @@ Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
 mysql> 
 
 ```
-You can edit the [`maxscale.cnf.d/example.cnf`](./maxscale.cnf.d/example.cnf)
+You can edit the [`maxscale.cnf`](./maxscale.cnf)
 file and recreate the MaxScale container to change the configuration.
 
-How to recreate the containers:
+How to recreate the containers after updating the configuration:
 
 ```
 docker-compose down -v
 docker-compose up --build -d
 ```
 
-To run maxctrl in the container to see the status of the cluster:
+How to get info on what docker containers are running:
+```
+docker ps
+```
+
+How to run maxctrl in the container to see the status of the cluster:
 ```
 $ docker-compose exec maxscale maxctrl list servers
 ┌────────┬─────────┬──────┬─────────────┬─────────────────┬──────┬───────────────┐                        
@@ -71,3 +81,29 @@ Once complete, to remove the cluster and maxscale containers:
 ```
 docker-compose down -v
 ```
+
+To run the main.py file to query the database, you will need python
+and mysql-connector-python installed.
+
+Commands to install/run the python script:
+
+
+```
+chmod +rx main.py
+sudo apt install python3-venv -y
+python3 -m venv venv
+source venv/bin/activate
+pip install mysql-connector-python
+python main.py
+```
+
+The script will perform the following queries and print the
+output to the console:
+
+-The largest zipcode in zipcodes_one
+-All zipcodes where state=KY (Kentucky). You may return just the zipcode column, or all columns.
+-All zipcodes between 40000 and 41000 
+-The TotalWages column where state=PA (Pennsylvania)
+
+
+##Thanks! :)
