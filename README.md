@@ -3,14 +3,23 @@
 
 ## Introduction
 This configuration sets up a MariaDB sharded database environment using Docker Compose and MaxScale.
-It includes two shards: 
+It includes: 
+
+Two shards: 
+
 shard1: contains zipcodes_one database
+
 shard2: contains zipcodes_two database
 
-MariaDB MaxScale is set up as a query router, distributing SQL queries across the 
 
-A Python script (main.py) which runs distributed queries across both shards.
-appropriate shards based on database name.
+MariaDB MaxScale:
+
+Set up as a router for distributing SQL queries based on database name. 
+
+
+A Python script (main.py):
+
+Runs queries across both shards and outputs data to the console.
 
 
 ## Running
@@ -84,7 +93,7 @@ $ docker-compose exec maxscale maxctrl list servers
 
 ```
 
-Once complete, to remove the cluster and shut down maxscale everything:
+Once complete, to remove the cluster and shut down everything:
 
 ```
 docker-compose down -v
@@ -98,11 +107,11 @@ Commands to install/run the python script:
 
 
 ```
-chmod +rx main.py
 sudo apt install python3-venv -y
 python3 -m venv venv
 source venv/bin/activate
 pip install mysql-connector-python
+chmod +rx main.py
 python main.py
 ```
 
