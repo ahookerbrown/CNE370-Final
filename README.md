@@ -1,21 +1,26 @@
 # MariaDB MaxScale Sharded Database Docker image
 
 
-## Running
-This configuration simulates a basic sharded database environment with two MariaDB shards. 
+## Introduction
+This configuration sets up a MariaDB sharded database environment using Docker Compose and MaxScale.
+It includes two shards: 
 shard1: contains zipcodes_one database
 shard2: contains zipcodes_two database
 
-MaxScale is set up as a query router, distributing SQL queries across the 
+MariaDB MaxScale is set up as a query router, distributing SQL queries across the 
+
+A Python script (main.py) which runs distributed queries across both shards.
 appropriate shards based on database name.
 
+
+## Running
 To start the cluster, navigate to the directory and run:
 
 ```
 docker-compose build
 docker-compose up -d
 ```
-This will start up MaxScale along with two MariaDB shard containers. 
+This will start up MaxScale along with two MariaDB shard containers (shard1 , shard2). 
 After a few seconds, you can begin routing queries through MaxScale.
 
 MaxScale exposes ports for client connections:
@@ -48,6 +53,8 @@ Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
 mysql> 
 
 ```
+
+## Configuration
 You can edit the [`maxscale.cnf`](./maxscale.cnf)
 file and recreate the MaxScale container to change the configuration.
 
@@ -58,6 +65,7 @@ docker-compose down -v
 docker-compose up --build -d
 ```
 
+## MaxScale Docker-Compose Setup
 How to get info on what docker containers are running:
 ```
 docker ps
@@ -76,12 +84,13 @@ $ docker-compose exec maxscale maxctrl list servers
 
 ```
 
-Once complete, to remove the cluster and maxscale containers:
+Once complete, to remove the cluster and shut down maxscale everything:
 
 ```
 docker-compose down -v
 ```
 
+## Python Script
 To run the main.py file to query the database, you will need python
 and mysql-connector-python installed.
 
