@@ -7,9 +7,9 @@ It includes the following items:
 
 **Two shards:** 
 
-*shard1*: contains zipcodes_one database
+**shard1**: contains *zipcodes_one* database
 
-*shard2*: contains zipcodes_two database
+**shard2**: contains *zipcodes_two* database
 
 
 **MariaDB MaxScale:**
