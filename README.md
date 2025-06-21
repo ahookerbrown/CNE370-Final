@@ -7,9 +7,9 @@ It includes the following items:
 
 **Two shards:** 
 
-* *shard1* *: contains zipcodes_one database
+*shard1*: contains zipcodes_one database
 
-* *shard2* *: contains zipcodes_two database
+*shard2*: contains zipcodes_two database
 
 
 **MariaDB MaxScale:**
@@ -17,7 +17,7 @@ It includes the following items:
 Set up as a router for distributing SQL queries based on database name. 
 
 
-**A Python script (* *main.py* *):**
+**A Python script (*main.py*):**
 
 Runs queries across both shards and outputs data to the console.
 
@@ -40,8 +40,8 @@ Port 8989 – MaxCtrl admin interface
 
 MaxScale and the databses use the following credentials:
 ```
-username: * *maxuser* *
-password: * *password* *
+username: *maxuser*
+password: *password*
 ```
 
 Example using the MariaDB client:
@@ -118,7 +118,7 @@ python main.py
 The script will perform the following queries and print the
 output to the console:
 
-1. The largest zipcode in * *zipcodes_one* *
+1. The largest zipcode in *zipcodes_one*
 
 2. All zipcodes where state=KY (Kentucky). You may return just the zipcode column, or all columns.
 
