@@ -6,80 +6,63 @@ This Docker image runs the latest 2.4 version of MariaDB MaxScale.
 	![build status badge](https://img.shields.io/travis/mariadb-corporation/maxscale-docker/master.svg)](https://travis-ci.org/mariadb-corporation/maxscale-docker/branches)
 
 ## Running
-[The MaxScale docker-compose setup](./docker-compose.yml) contains MaxScale
-configured with a three node master-slave cluster. To start it, run the
-following commands in this directory.
+This configuration simulates a basic sharded database environment with two MariaDB shards. 
+MaxScale is set up as a query router, distributing SQL queries across the 
+appropriate shards based on database name.
+
+To start the cluster, navigate to the directory and run:
 
 ```
 docker-compose build
 docker-compose up -d
 ```
+This will start up MaxScale along with two MariaDB shard containers. 
+After a few seconds, you can begin routing queries through MaxScale.
 
-After MaxScale and the servers have started (takes a few minutes), you can find
-the readwritesplit router on port 4006 and the readconnroute on port 4008. The
-user `maxuser` with the password `maxpwd` can be used to test the cluster.
-Assuming the mariadb client is installed on the host machine:
+MaxScale exposes ports for client connections:
+
+Port 4000 – Generic SQL routing
+
+Port 8989 – MaxCtrl admin interface
+
+Example using the MariaDB client:
 ```
-$ mysql -umaxuser -pmaxpwd -h 127.0.0.1 -P 4006 test
-Welcome to the MariaDB monitor.  Commands end with ; or \g.
-Your MySQL connection id is 5
-Server version: 10.2.12 2.2.9-maxscale mariadb.org binary distribution
+$ mysql -umaxuser -ppassword -h 127.0.0.1 -P 4000 zipcodes_one
+Welcome to the MySQL monitor.  Commands end with ; or \g.
+Your MySQL connection id is 1
+Server version: 5.5.5-10.3.39-MariaDB-1:10.3.39+maria~ubu2004 mariadb.org binary distribution
 
-Copyright (c) 2000, 2018, Oracle, MariaDB Corporation Ab and others.
+Copyright (c) 2000, 2025, Oracle and/or its affiliates.
+
+Oracle is a registered trademark of Oracle Corporation and/or its
+affiliates. Other names may be trademarks of their respective
+owners.
 
 Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
 
-MySQL [test]>
+mysql> 
+
 ```
 You can edit the [`maxscale.cnf.d/example.cnf`](./maxscale.cnf.d/example.cnf)
 file and recreate the MaxScale container to change the configuration.
 
-To stop the containers, execute the following command. Optionally, use the -v
-flag to also remove the volumes.
+How to recreate the containers:
+
+```
+docker-compose down -v
+docker-compose up --build -d
+```
 
 To run maxctrl in the container to see the status of the cluster:
 ```
 $ docker-compose exec maxscale maxctrl list servers
-┌─────────┬─────────┬──────┬─────────────┬─────────────────┬──────────┐
-│ Server  │ Address │ Port │ Connections │ State           │ GTID     │
-├─────────┼─────────┼──────┼─────────────┼─────────────────┼──────────┤
-│ server1 │ master  │ 3306 │ 0           │ Master, Running │ 0-3000-5 │
-├─────────┼─────────┼──────┼─────────────┼─────────────────┼──────────┤
-│ server2 │ slave1  │ 3306 │ 0           │ Slave, Running  │ 0-3000-5 │
-├─────────┼─────────┼──────┼─────────────┼─────────────────┼──────────┤
-│ server3 │ slave2  │ 3306 │ 0           │ Running         │ 0-3000-5 │
-└─────────┴─────────┴──────┴─────────────┴─────────────────┴──────────┘
-
-```
-
-The cluster is configured to utilize automatic failover. To illustrate this you can stop the master
-container and watch for maxscale to failover to one of the original slaves and then show it rejoining
-after recovery:
-```
-$ docker-compose stop master
-Stopping maxscaledocker_master_1 ... done
-$ docker-compose exec maxscale maxctrl list servers
-┌─────────┬─────────┬──────┬─────────────┬─────────────────┬─────────────┐
-│ Server  │ Address │ Port │ Connections │ State           │ GTID        │
-├─────────┼─────────┼──────┼─────────────┼─────────────────┼─────────────┤
-│ server1 │ master  │ 3306 │ 0           │ Down            │ 0-3000-5    │
-├─────────┼─────────┼──────┼─────────────┼─────────────────┼─────────────┤
-│ server2 │ slave1  │ 3306 │ 0           │ Master, Running │ 0-3001-7127 │
-├─────────┼─────────┼──────┼─────────────┼─────────────────┼─────────────┤
-│ server3 │ slave2  │ 3306 │ 0           │ Slave, Running  │ 0-3001-7127 │
-└─────────┴─────────┴──────┴─────────────┴─────────────────┴─────────────┘
-$ docker-compose start master
-Starting master ... done
-$ docker-compose exec maxscale maxctrl list servers
-┌─────────┬─────────┬──────┬─────────────┬─────────────────┬─────────────┐
-│ Server  │ Address │ Port │ Connections │ State           │ GTID        │
-├─────────┼─────────┼──────┼─────────────┼─────────────────┼─────────────┤
-│ server1 │ master  │ 3306 │ 0           │ Slave, Running  │ 0-3001-7127 │
-├─────────┼─────────┼──────┼─────────────┼─────────────────┼─────────────┤
-│ server2 │ slave1  │ 3306 │ 0           │ Master, Running │ 0-3001-7127 │
-├─────────┼─────────┼──────┼─────────────┼─────────────────┼─────────────┤
-│ server3 │ slave2  │ 3306 │ 0           │ Slave, Running  │ 0-3001-7127 │
-└─────────┴─────────┴──────┴─────────────┴─────────────────┴─────────────┘
+┌────────┬─────────┬──────┬─────────────┬─────────────────┬──────┬───────────────┐                        
+│ Server │ Address │ Port │ Connections │ State           │ GTID │ Monitor       │                        
+├────────┼─────────┼──────┼─────────────┼─────────────────┼──────┼───────────────┤                        
+│ shard1 │ shard1  │ 3306 │ 0           │ Master, Running │      │ MySQL-Monitor │                        
+├────────┼─────────┼──────┼─────────────┼─────────────────┼──────┼───────────────┤                        
+│ shard2 │ shard2  │ 3306 │ 0           │ Running         │      │ MySQL-Monitor │                        
+└────────┴─────────┴──────┴─────────────┴─────────────────┴──────┴───────────────┘  
 
 ```
 
