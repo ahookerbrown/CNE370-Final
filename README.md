@@ -100,10 +100,14 @@ python main.py
 The script will perform the following queries and print the
 output to the console:
 
--The largest zipcode in zipcodes_one
--All zipcodes where state=KY (Kentucky). You may return just the zipcode column, or all columns.
--All zipcodes between 40000 and 41000 
--The TotalWages column where state=PA (Pennsylvania)
+1. The largest zipcode in zipcodes_one
+
+2. All zipcodes where state=KY (Kentucky). You may return just the zipcode column, or all columns.
+
+3. All zipcodes between 40000 and 41000 
+
+4. The TotalWages column where state=PA (Pennsylvania)
+
 
 
 ## Thanks! :)
