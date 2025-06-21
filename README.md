@@ -1,23 +1,23 @@
-# MariaDB MaxScale Sharded Database Docker image
+### MariaDB MaxScale Sharded Database Docker image
 
 
 ## Introduction
 This configuration sets up a MariaDB sharded database environment using Docker Compose and MaxScale.
-It includes: 
+## It includes: 
 
-Two shards: 
+# Two shards: 
 
 shard1: contains zipcodes_one database
 
 shard2: contains zipcodes_two database
 
 
-MariaDB MaxScale:
+# ariaDB MaxScale:
 
 Set up as a router for distributing SQL queries based on database name. 
 
 
-A Python script (main.py):
+# A Python script (main.py):
 
 Runs queries across both shards and outputs data to the console.
 
